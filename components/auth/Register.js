@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
-import { auth } from "../../firebase";
+import { auth, db } from "../../firebase";
 
 const Register = () => {
   const [input, setInput] = useState({
@@ -12,7 +12,10 @@ const Register = () => {
   const onSignUp = () => {
     const { name, email, password } = input;
     auth.createUserWithEmailAndPassword(email, password).then((res) => {
-        console.log(res)
+        db.collection("users").doc(auth.currentUser.uid).set({
+          name,
+          email
+        })
     }).catch((err) => {
         console.log(err)
     })

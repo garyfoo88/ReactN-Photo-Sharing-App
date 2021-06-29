@@ -7,6 +7,13 @@ import Landing from "./components/auth/Landing";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import { auth } from "./firebase";
+import { Provider } from "react-redux";
+import { createStore, applyMiddleware } from "redux";
+import rootReducer from "./redux/reducers";
+import thunk from "redux-thunk";
+import Main from "./components/Main";
+const store = createStore(rootReducer, applyMiddleware(thunk));
+
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -31,7 +38,9 @@ export default function App() {
         <Text>Loading...</Text>
       </View>
     );
-  } else {
+  }
+
+  if (!loggedIn) {
     return (
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Landing">
@@ -46,4 +55,18 @@ export default function App() {
       </NavigationContainer>
     );
   }
+
+  return (
+    <Provider store={store}>
+      <NavigationContainer>
+      <Stack.Navigator initialRouteName="Main">
+        <Stack.Screen
+          name="Main"
+          component={Main}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
+  );
 }
