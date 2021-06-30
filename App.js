@@ -12,6 +12,7 @@ import { createStore, applyMiddleware } from "redux";
 import rootReducer from "./redux/reducers";
 import thunk from "redux-thunk";
 import Main from "./components/Main";
+import Add from "./components/main/Add";
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const Stack = createStackNavigator();
@@ -64,6 +65,10 @@ export default function App() {
           name="Main"
           component={Main}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Add"
+          component={Add}
         />
       </Stack.Navigator>
       </NavigationContainer>
