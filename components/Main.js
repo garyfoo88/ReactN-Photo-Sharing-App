@@ -11,7 +11,6 @@ const Main = () => {
 
   useEffect(() => {
     dispatch(fetchUser());
-    console.log(User)
   }, []);
 
   return (
