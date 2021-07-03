@@ -87,6 +87,7 @@ const Add = ({ navigation }) => {
         }}
       />
       <Button
+        disabled={!image}
         title="Save"
         onPress={() => {
           navigation.navigate("Save", { image });

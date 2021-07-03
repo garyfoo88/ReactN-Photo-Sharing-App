@@ -25,4 +25,5 @@ if (firebase.apps.length === 0) {
 
 const db = app.firestore();
 const auth = firebase.auth();
-export { db, auth };
+const serverTime = firebase.firestore.FieldValue.serverTimestamp()
+export { db, auth, serverTime };

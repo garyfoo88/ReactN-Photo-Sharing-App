@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser } from "../redux/actions";
+import { fetchUser, fetchUserPosts } from "../redux/actions";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Feed from "./main/Feed";
@@ -20,6 +20,7 @@ const Main = () => {
 
   useEffect(() => {
     dispatch(fetchUser());
+    dispatch(fetchUserPosts())
   }, []);
 
   if (User.currentUser == undefined) {
