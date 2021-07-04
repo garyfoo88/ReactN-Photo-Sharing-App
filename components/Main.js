@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, fetchUserPosts } from "../redux/actions";
+import { fetchUser, fetchUserFollowing, fetchUserPosts } from "../redux/actions";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Feed from "./main/Feed";
 import Add from "./main/Add";
 import Profile from "./main/Profile";
+import Search from "./main/Search";
+import { auth } from "../firebase";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -20,7 +22,8 @@ const Main = () => {
 
   useEffect(() => {
     dispatch(fetchUser());
-    dispatch(fetchUserPosts())
+    dispatch(fetchUserPosts());
+    dispatch(fetchUserFollowing())
   }, []);
 
   if (User.currentUser == undefined) {
@@ -45,6 +48,15 @@ const Main = () => {
         }}
       />
       <Tab.Screen
+        name="Search"
+        component={Search}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="magnify" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="MainAdd"
         listeners={({ navigation }) => ({
           tabPress: (event) => {
@@ -62,6 +74,12 @@ const Main = () => {
       <Tab.Screen
         name="Profile"
         component={Profile}
+        listeners={({ navigation }) => ({
+          tabPress: (event) => {
+            event.preventDefault();
+            navigation.navigate("Profile", { uid: auth.currentUser.uid });
+          },
+        })}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons

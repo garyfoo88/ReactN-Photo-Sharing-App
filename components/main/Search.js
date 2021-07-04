@@ -1,27 +1,54 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { db } from "../../firebase";
 
-const Search = () => {
+const Search = (props) => {
   const [users, setUsers] = useState([]);
 
   const fetchUsers = (search) => {
     db.collection("users")
-      .where("name", ">=", search)
+      .where("name", "==", search)
       .get()
       .then((snapshot) => {
-        let users = snapshot.docs.map((doc) => {
+        let usersSnapshot = snapshot.docs.map((doc) => {
           const data = doc.data();
           const id = doc.id;
           return { id, ...data };
         });
-        setUsers(users);
+
+        setUsers(usersSnapshot);
       });
   };
 
   return (
     <View>
-      <Text>Feed</Text>
+      <TextInput
+        placeholder="Search User..."
+        onChangeText={(search) => fetchUsers(search)}
+      />
+      <FlatList
+        numColumns={1}
+        horizontal={false}
+        data={users}
+        renderItem={({ item }) => {
+          return (
+            <TouchableOpacity
+              onPress={() =>
+                props.navigation.navigate("Profile", { uid: item.id })
+              }
+            >
+              <Text>{item.name}</Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
     </View>
   );
 };

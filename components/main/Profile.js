@@ -1,14 +1,94 @@
-import React from "react";
-import { StyleSheet, Text, View, Image, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View, Image, FlatList, Button } from "react-native";
 import { useSelector } from "react-redux";
+import { auth, db } from "../../firebase";
 
 const Profile = (props) => {
+  const [userPost, setUserPost] = useState([]);
+  const [users, setUsers] = useState(null);
+  const [following, setFollowing] = useState(false);
   const user = useSelector((state) => state.userState);
+
+  useEffect(() => {
+    if (props.route.params.uid === auth.currentUser.uid) {
+      setUsers(user.currentUser);
+      setUserPost(user.posts);
+    } else {
+      db.collection("users")
+        .doc(props.route.params.uid)
+        .get()
+        .then((snapshot) => {
+          if (snapshot.exists) {
+            setUsers(snapshot.data());
+          } else {
+            console.log(snapshot);
+          }
+        });
+
+      db.collection("posts")
+        .doc(props.route.params.uid)
+        .collection("userPosts")
+        .orderBy("creation", "asc")
+        .get()
+        .then((snapshot) => {
+          let posts = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            const id = doc.id;
+            return { id, ...data };
+          });
+          setUserPost(posts);
+        });
+    }
+
+    if (user.following.indexOf(props.route.params.uid) > -1) {
+      setFollowing(true);
+    } else {
+      setFollowing(false);
+    }
+
+  }, [props.route.params.uid, user.following]);
+
+  const onFollow = () => {
+    db.collection("following")
+      .doc(auth.currentUser.uid)
+      .collection("userFollowing")
+      .doc(props.route.params.uid)
+      .set({});
+  };
+
+  const onUnfollow = () => {
+    db.collection("following")
+      .doc(auth.currentUser.uid)
+      .collection("userFollowing")
+      .doc(props.route.params.uid)
+      .delete();
+  };
+
+  if (users === null) return <View></View>;
   return (
     <View style={styles.container}>
       <View style={styles.containerInfo}>
-        <Text>{user.currentUser.name}</Text>
-        <Text>{user.currentUser.email}</Text>
+        <Text>{users.name}</Text>
+        <Text>{users.email}</Text>
+        {props.route.params.uid !== auth.currentUser.uid ? (
+          <View>
+            {following ? (
+              <Button
+                title="Following"
+                onPress={() => {
+                  onUnfollow();
+                }}
+              />
+            ) : (
+              <Button
+                title="Follow"
+                onPress={() => {
+                  onFollow();
+                }}
+              />
+            )}
+          </View>
+        ) : null}
       </View>
       <View style={styles.containerGallery}>
         <FlatList
@@ -16,7 +96,7 @@ const Profile = (props) => {
           //keyExtractor={item => item.id}
           numColumns={3}
           horizontal={false}
-          data={user.posts}
+          data={userPost}
           renderItem={({ item }) => {
             return (
               <View style={styles.containerImage}>
@@ -38,7 +118,7 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 40,
+    marginTop: 20,
   },
   containerInfo: {
     margin: 20,
