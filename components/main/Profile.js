@@ -45,7 +45,6 @@ const Profile = (props) => {
     } else {
       setFollowing(false);
     }
-
   }, [props.route.params.uid, user.following]);
 
   const onFollow = () => {
@@ -63,6 +62,10 @@ const Profile = (props) => {
       .doc(props.route.params.uid)
       .delete();
   };
+
+  const onLogout = () => {
+    auth.signOut();
+  }
 
   if (users === null) return <View></View>;
   return (
@@ -88,7 +91,14 @@ const Profile = (props) => {
               />
             )}
           </View>
-        ) : null}
+        ) : (
+          <Button
+            title="Logout"
+            onPress={() => {
+              onLogout();
+            }}
+          />
+        )}
       </View>
       <View style={styles.containerGallery}>
         <FlatList

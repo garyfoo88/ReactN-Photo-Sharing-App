@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, fetchUserFollowing, fetchUserPosts } from "../redux/actions";
+import { clearData, fetchUser, fetchUserFollowing, fetchUserPosts } from "../redux/actions";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Feed from "./main/Feed";
@@ -12,7 +12,7 @@ import { auth } from "../firebase";
 
 const Tab = createMaterialBottomTabNavigator();
 
-const Main = () => {
+const Main = ({navigation}) => {
   const dispatch = useDispatch();
   const User = useSelector((state) => state.userState);
 
@@ -21,6 +21,7 @@ const Main = () => {
   };
 
   useEffect(() => {
+    dispatch(clearData())
     dispatch(fetchUser());
     dispatch(fetchUserPosts());
     dispatch(fetchUserFollowing())

@@ -45,7 +45,7 @@ const Save = (props) => {
         creation: serverTime,
       })
       .then(() => {
-        props.navigation.popToTop();
+        props.navigation.navigate("Feed")
       });
   };
 

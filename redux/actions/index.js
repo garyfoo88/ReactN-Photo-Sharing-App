@@ -1,10 +1,20 @@
 import { auth, db } from "../../firebase";
 import {
+  CLEAR_DATA,
   USERS_DATA_STATE_CHANGE,
+  USERS_POSTS_STATE_CHANGE,
   USER_FOLLOWING_STATE_CHANGE,
   USER_POSTS_STATE_CHANGE,
   USER_STATE_CHANGE,
 } from "../constants";
+
+export function clearData() {
+  return ((dispatch) => {
+    dispatch({
+      type: CLEAR_DATA
+    })
+  })
+}
 
 export function fetchUser() {
   return (dispatch) => {
@@ -83,7 +93,7 @@ export function fetchUsersData(uid) {
               type: USERS_DATA_STATE_CHANGE,
               user,
             });
-            dispatch(fetchUsersFollowingPosts(user.id));
+            dispatch(fetchUsersFollowingPosts(user.uid));
           }
         });
     }
@@ -98,7 +108,9 @@ export function fetchUsersFollowingPosts(uid) {
       .orderBy("creation", "asc")
       .get()
       .then((snapshot) => {
-        const uid = snapshot.query.EP.path.segments[1];
+        //console.log(snapshot.query._delegate._query.path.segments[1])
+
+        const uid = snapshot.query._delegate._query.path.segments[1];
 
         const user = getState().usersState.users.find((el) => el.uid === uid);
 

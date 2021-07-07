@@ -4,20 +4,43 @@ import { useSelector } from "react-redux";
 import { auth, db } from "../../firebase";
 
 const Feed = () => {
-  const [userPost, setUserPost] = useState([]);
-  const [users, setUsers] = useState(null);
-  const [following, setFollowing] = useState(false);
-  const user = useSelector((state) => state.userState);
+  const [posts, setPosts] = useState([]);
+  const usersState = useSelector((state) => state.usersState);
+  const userState = useSelector((state) => state.userState);
 
   useEffect(() => {
+    let posts = [];
+    if (usersState.userLoaded == userState.following.length) {
+      for (let i = 0; i < userState.following.length; i++) {
+        const user = usersState.users.find(
+          (el) => el.uid === userState.following[i]
+        );
+        if (user !== undefined) {
+          posts = [...posts, ...user.posts];
+        }
+      }
+      posts.sort((x, y) => {
+        return x.creation - y.creation;
+      });
+      setPosts(posts);
+    }
+  }, [usersState.userLoaded]);
 
-  }, []);
-
-
-  if (users === null) return <View></View>;
   return (
     <View style={styles.container}>
-      
+      <FlatList
+        numColumns={1}
+        horizontal={false}
+        data={posts}
+        renderItem={({ item }) => {
+          return (
+            <View>
+              <Text>{item.user.name}</Text>
+              <Image source={{ uri: item.downloadURL }} />
+            </View>
+          );
+        }}
+      />
     </View>
   );
 };
@@ -43,4 +66,3 @@ const styles = StyleSheet.create({
     flex: 1 / 3,
   },
 });
-
