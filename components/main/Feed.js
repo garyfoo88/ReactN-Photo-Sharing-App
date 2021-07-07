@@ -3,14 +3,13 @@ import { StyleSheet, Text, View, Image, FlatList, Button } from "react-native";
 import { useSelector } from "react-redux";
 import { auth, db } from "../../firebase";
 
-const Feed = () => {
+const Feed = (props) => {
   const [posts, setPosts] = useState([]);
   const usersState = useSelector((state) => state.usersState);
   const userState = useSelector((state) => state.userState);
-
   useEffect(() => {
     let posts = [];
-    if (usersState.userLoaded == userState.following.length) {
+    if (usersState.usersFollowingLoaded == userState.following.length) {
       for (let i = 0; i < userState.following.length; i++) {
         const user = usersState.users.find(
           (el) => el.uid === userState.following[i]
@@ -24,7 +23,7 @@ const Feed = () => {
       });
       setPosts(posts);
     }
-  }, [usersState.userLoaded]);
+  }, [usersState.usersFollowingLoaded]);
 
   return (
     <View style={styles.container}>
@@ -35,8 +34,15 @@ const Feed = () => {
         renderItem={({ item }) => {
           return (
             <View>
-              <Text>{item.user.name}</Text>
-              <Image source={{ uri: item.downloadURL }} />
+              <Text>{item.caption}</Text>
+              <Image style={styles.image} source={{ uri: item.downloadUrl }} />
+              <Text
+                onPress={() =>
+                  props.navigation.navigate("Comments", { postId: item.id, uid: item.user.uid  })
+                }
+              >
+                View Comments...
+              </Text>
             </View>
           );
         }}

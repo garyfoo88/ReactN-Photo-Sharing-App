@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TextInput, Image, Button } from "react-native";
 import firebase from "firebase";
 import { auth, db, serverTime } from "../../firebase";
 import { NavigationContainer } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { fetchUserPosts } from "../../redux/actions";
 
 const Save = (props) => {
   const [caption, setCaption] = useState("");
@@ -22,6 +24,7 @@ const Save = (props) => {
 
     };
 
+   
     const taskCompleted = () => {
       task.snapshot.ref.getDownloadURL().then((snapshot) => {
         savePostData(snapshot);
@@ -45,7 +48,8 @@ const Save = (props) => {
         creation: serverTime,
       })
       .then(() => {
-        props.navigation.navigate("Feed")
+        
+        props.navigation.popToTop()
       });
   };
 

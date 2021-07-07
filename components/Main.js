@@ -77,6 +77,7 @@ const Main = ({navigation}) => {
         component={Profile}
         listeners={({ navigation }) => ({
           tabPress: (event) => {
+            dispatch(fetchUserPosts())
             event.preventDefault();
             navigation.navigate("Profile", { uid: auth.currentUser.uid });
           },

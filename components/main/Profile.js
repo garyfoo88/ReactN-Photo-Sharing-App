@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Image, FlatList, Button } from "react-native";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { auth, db } from "../../firebase";
+import { fetchUserPosts } from "../../redux/actions";
 
 const Profile = (props) => {
   const [userPost, setUserPost] = useState([]);
@@ -10,6 +12,7 @@ const Profile = (props) => {
   const user = useSelector((state) => state.userState);
 
   useEffect(() => {
+    
     if (props.route.params.uid === auth.currentUser.uid) {
       setUsers(user.currentUser);
       setUserPost(user.posts);
@@ -45,7 +48,7 @@ const Profile = (props) => {
     } else {
       setFollowing(false);
     }
-  }, [props.route.params.uid, user.following]);
+  }, [props.route.params.uid, user.following, user.posts]);
 
   const onFollow = () => {
     db.collection("following")
@@ -118,7 +121,9 @@ const Profile = (props) => {
             );
           }}
         />
+        
       </View>
+      
     </View>
   );
 };
@@ -133,7 +138,9 @@ const styles = StyleSheet.create({
   containerInfo: {
     margin: 20,
   },
-  containerGallery: {},
+  containerGallery: {
+    marginBottom: 120,
+  },
 
   image: {
     flex: 1,
