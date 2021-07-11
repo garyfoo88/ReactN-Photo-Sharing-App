@@ -2,6 +2,7 @@ import { auth, db } from "../../firebase";
 import {
   CLEAR_DATA,
   USERS_DATA_STATE_CHANGE,
+  USERS_LIKES_STATE_CHANGE,
   USERS_POSTS_STATE_CHANGE,
   USER_FOLLOWING_STATE_CHANGE,
   USER_POSTS_STATE_CHANGE,
@@ -97,9 +98,9 @@ export function fetchUsersData(uid, getPosts) {
             console.log("does not exist");
           }
         });
-        if (getPosts) {
-          dispatch(fetchUsersFollowingPosts(uid));
-        }
+      if (getPosts) {
+        dispatch(fetchUsersFollowingPosts(uid));
+      }
     }
   };
 }
@@ -123,10 +124,42 @@ export function fetchUsersFollowingPosts(uid) {
           const id = doc.id;
           return { id, ...data, user };
         });
+
+        for (let i = 0; i < posts.length; i++) {
+          fetchUsersFollowingPosts(uid, posts[i].id);
+        }
         dispatch({
           type: USERS_POSTS_STATE_CHANGE,
           posts,
           uid,
+        });
+      });
+  };
+}
+
+export function fetchUsersFollowingLikes(uid, postId) {
+  return (dispatch, getState) => {
+    db.collection("posts")
+      .doc(uid)
+      .collection("userPosts")
+      .doc(postId)
+      .collection("likes")
+      .doc(auth.currentUser.uid)
+      .onSnapshot((snapshot) => {
+        //console.log(snapshot.query._delegate._query.path.segments[1])
+
+        const postsId = snapshot.ZE.path.segments[3];
+
+        let currenUserLike = false;
+
+        if (snapshot.exists) {
+          currenUserLike = true
+        }
+
+        dispatch({
+          type: USERS_LIKES_STATE_CHANGE,
+          postsId,
+          currenUserLike,
         });
       });
   };

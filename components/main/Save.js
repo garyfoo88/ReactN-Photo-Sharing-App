@@ -20,20 +20,15 @@ const Save = (props) => {
     //uploads the image to storage
     //https://firebase.google.com/docs/storage/web/upload-files
     const task = firebase.storage().ref().child(childPath).put(blob);
-    const taskProgress = (snapshot) => {
+    const taskProgress = (snapshot) => {};
 
-    };
-
-   
     const taskCompleted = () => {
       task.snapshot.ref.getDownloadURL().then((snapshot) => {
         savePostData(snapshot);
       });
     };
 
-    const taskError = (snapshot) => {
-
-    };
+    const taskError = (snapshot) => {};
 
     task.on("state_changed", taskProgress, taskError, taskCompleted);
   };
@@ -45,11 +40,11 @@ const Save = (props) => {
       .add({
         downloadUrl,
         caption,
+        likesCount: 0,
         creation: serverTime,
       })
       .then(() => {
-        
-        props.navigation.popToTop()
+        props.navigation.popToTop();
       });
   };
 
